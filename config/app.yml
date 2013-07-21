@@ -48,9 +48,9 @@ log:
   # now, if you want to have it do debug for everything but the classes in
   # Roby::Distributed, do
   #
-  # levels:
-  #     roby: DEBUG
-  #     roby/distributed: INFO
+  levels:
+      syskit: DEBUG
+      transformer: DEBUG
   #
   # The available logging levels are DEBUG, INFO, WARN and FATAL. The output can be
   # redirected in a file using level:filename, in which case 'filename' is relative to the
