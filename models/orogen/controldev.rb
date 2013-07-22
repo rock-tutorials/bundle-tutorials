@@ -1,2 +1,2 @@
-require 'models/blueprints/command_generator_srv'
-Controldev::JoystickTask.provides Tutorials::CommandGeneratorSrv, :as => 'cmd'
+require 'rock/models/blueprints/control'
+Controldev::JoystickTask.provides Base::Motion2DControllerSrv, :as => 'cmd'

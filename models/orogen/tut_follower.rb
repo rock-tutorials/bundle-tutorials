@@ -1,3 +1,3 @@
-require 'models/blueprints/command_generator_srv'
-TutFollower::Task.provides Tutorials::CommandGeneratorSrv, :as => 'cmd'
+require 'rock/models/blueprints/control'
+TutFollower::Task.provides Base::Motion2DControllerSrv, :as => 'cmd'
 
