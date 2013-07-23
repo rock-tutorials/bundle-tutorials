@@ -30,7 +30,7 @@ module Tutorials
             use(TutBrownian::Task, rock1_dev).
             use_deployments(/target/)
         define 'follower', Tutorials::RockControl.
-            use(TutFollower::Task, leader_def, rock2_dev).
+            use(TutFollower::Task, rock2_dev, 'target_pose' => leader_def).
             use_deployments(/follower/)
     end
 end
