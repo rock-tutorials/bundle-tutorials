@@ -7,8 +7,10 @@ module Tutorials
     profile 'BaseRocks' do
         robot do
             device Dev::Controldev::Joystick, :as => 'joystick'
-            device Dev::Platforms::Rock, :as => 'rock1'
-            device Dev::Platforms::Rock, :as => 'rock2'
+            device(Dev::Platforms::Rock, :as => 'rock1').
+                frame_transform('leader' => 'world')
+            device(Dev::Platforms::Rock, :as => 'rock2').
+                frame_transform('follower' => 'world')
         end
 
         define 'joystick',    Tutorials::RockControl.
@@ -39,6 +41,17 @@ module Tutorials
     end
     profile 'RocksWithTransformer' do
         use_profile BaseRocks
-        define 'follower', follower_def.use(TutSensor::TransformerTask)
+        transformer do
+            frames 'leader', 'follower', 'world'
+            dynamic_transform rock1_dev.use_deployments(/follower/),
+                'leader' => 'world'
+            dynamic_transform rock2_dev.use_deployments(/target/),
+                'follower' => 'world'
+        end 
+
+        define 'follower', follower_def.
+            use(TutSensor::TransformerTask).
+            use_frames('target' => 'leader',
+                       'world' => 'world')
     end
 end
