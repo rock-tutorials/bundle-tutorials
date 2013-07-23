@@ -9,4 +9,5 @@
 
   <depend package="bundles/rock" />
   <depend package="tools/syskit" />
+  <depend package="tutorials/orogen/tut_deployment" />
 </package>
