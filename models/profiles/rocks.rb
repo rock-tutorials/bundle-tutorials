@@ -4,7 +4,7 @@ using_task_library 'tut_brownian'
 using_task_library 'tut_follower'
 
 module Tutorials
-    profile 'Rocks' do
+    profile 'BaseRocks' do
         robot do
             device Dev::Controldev::Joystick, :as => 'joystick'
             device Dev::Platforms::Rock, :as => 'rock1'
@@ -29,8 +29,16 @@ module Tutorials
         define 'leader', Tutorials::RockControl.
             use(TutBrownian::Task, rock1_dev).
             use_deployments(/target/)
-        define 'follower', Tutorials::RockControl.
-            use(TutFollower::Task, rock2_dev, 'target_pose' => leader_def).
+        define 'follower', Tutorials::RockFollower.
+            use(TutFollower::Task, rock2_dev).
             use_deployments(/follower/)
+    end
+    profile 'RocksWithoutTransformer' do
+        use_profile BaseRocks
+        define 'follower', follower_def.use(TutSensor::Task, 'target_pose' => leader_def)
+    end
+    profile 'RocksWithTransformer' do
+        use_profile BaseRocks
+        define 'follower', follower_def.use(TutSensor::TransformerTask)
     end
 end
