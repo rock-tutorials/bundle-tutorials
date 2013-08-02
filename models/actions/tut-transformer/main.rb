@@ -28,5 +28,47 @@ to origin when passing the border')
         # And transition back when we reach the origin
         transition origin, target_monitor.reached_event, random
     end
+
+    # This has been defined for the fenced_random_move action above. We simply
+    # add a new event to it and reuse it for the
+    # fenced_random_move_with_monitors action
+    FencedRandomMove.event :crossed_fence
+
+    describe('random motion within a delimited area').
+        returns(FencedRandomMove).
+        optional_arg('fence_size', 'size in meters of the fence around the origin', 3).
+        optional_arg('threshold', 'size in meters we need to be from the origin to consider that we have reached it', 1)
+    action_state_machine 'fenced_random_move_with_monitors' do
+        # The 'move randomly' state
+        random = state random_def
+        # Monitor that verifies that we don't go outside the fence. Emit the
+        # cross_fenced event on the state machine's task when it happens
+        #
+        # The rest of the options passes arguments from the action state machine
+        # to the monitor
+        random.monitor('fence', random.rock_child.pose_samples_port, :fence_size => fence_size).
+            trigger_on do |pose|
+                puts "#{pose.position.x} #{pose.position.y}"
+                pose.position.x.abs > fence_size || pose.position.y.abs > fence_size
+            end.
+            emit crossed_fence_event
+
+        # The move-to-origin state
+        origin = state to_origin_def.use(rock1_dev).use_deployments(/target/)
+        # Monitor that waits for us to be close enough to the center
+        origin.monitor('reached_center', origin.rock_child.pose_samples_port, :threshold => threshold).
+            trigger_on do |pose|
+                puts "#{pose.position.x} #{pose.position.y}"
+                pose.position.x.abs < threshold && pose.position.y.abs < threshold
+            end.
+            emit origin.success_event
+
+        # We start by moving randomly
+        start random
+        # We transition each time the rock passes the fence
+        transition random, crossed_fence_event, origin
+        # And transition back when we reach the origin
+        transition origin, origin.success_event, random
+    end
 end
 
