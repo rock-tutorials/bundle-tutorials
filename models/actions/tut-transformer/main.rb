@@ -1,4 +1,5 @@
 require 'models/actions/main'
+require 'models/actions/fence'
 require 'models/profiles/rocks'
 class Main < Roby::Actions::Interface
     use_profile Tutorials::RocksWithTransformer
@@ -62,6 +63,19 @@ class Main < Roby::Actions::Interface
         transition random, crossed_fence_event, origin
         # And transition back when we reach the origin
         transition origin, origin.success_event, random
+    end
+
+    describe('random motion within a delimited area').
+        optional_arg('fence_size', 'size in meters of the fence around the origin', 3).
+        optional_arg('threshold', 'size in meters we need to be from the origin to consider that we have reached it', 1)
+    action_state_machine 'fenced_random_move_with_faults' do
+        use_fault_response_table Tutorials::Fence,
+            :origin_reached_threshold => threshold,
+            :fence_size => fence_size
+
+        # And move randomly ... "forever"
+        random = state random_def
+        start random
     end
 end
 
