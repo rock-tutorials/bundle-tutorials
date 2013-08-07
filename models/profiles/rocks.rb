@@ -48,5 +48,9 @@ module Tutorials
             use(TutSensor::TransformerTask).
             use_frames('target' => 'leader',
                        'world' => 'world')
+
+        define 'to_origin', Tutorials::RockFollower.
+            use(TutFollower::Task, TutSensor::TransformerTask).
+            use_frames('target' => 'world', 'world' => 'world')
     end
 end
