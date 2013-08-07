@@ -14,14 +14,18 @@ module Tutorials
 
         export rock_child.pose_samples_port
         provides Base::PoseSrv, :as => 'pose'
+    end
 
-        specialize cmd_child => TutFollower::Task do
-            add Base::PoseSrv, :as => "target_pose"
-            add TutSensor::Task, :as => 'sensor'
+    # Submodel of RockControl for follower behaviours
+    class RockFollower < RockControl
+        overload cmd_child, TutFollower::Task
+        add DistanceBearingSensorSrv, :as => 'sensor'
+        sensor_child.connect_to cmd_child
 
+        specialize sensor_child => TutSensor::Task do
+            add Base::PoseSrv, :as => 'target_pose'
             target_pose_child.connect_to sensor_child.target_frame_port
             rock_child.connect_to sensor_child.local_frame_port
-            sensor_child.connect_to cmd_child
         end
     end
 end
